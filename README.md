@@ -28,8 +28,8 @@ Bu depo, Rust programlama dilini sıfırdan ileri seviyeye kadar öğrenmek içi
   - *Açıklama:* Sıfırdan HTTP sunucusu yazımı, Thread Pool implementasyonu.
   - *Kazanımlar:* TCP/IP, Thread yönetimi, `Arc` ve `Mutex`.
 
-- [ ] **Proje 4: Gerçek Zamanlı Chat Uygulaması**
-  - *Plan:* `tokio` kullanarak asenkron chat sunucusu ve istemcisi.
+- [x] **[Proje 4: Gerçek Zamanlı Chat Uygulaması](./async_chat/README.md)**
+  - *Açıklama:* `tokio` kullanarak asenkron chat sunucusu ve istemcisi.
   - *Kazanımlar:* Async/Await, Stream işleme, Ağ programlama.
 
 ### Seviye 3: İleri Seviye ve Performans (Advanced)
