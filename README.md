@@ -24,8 +24,8 @@ Bu depo, Rust programlama dilini sıfırdan ileri seviyeye kadar öğrenmek içi
 ### Seviye 2: Sistem Programlama ve Ağ (Intermediate)
 **Odak:** Traits, Generics, Smart Pointers, Concurrency, Async/Await.
 
-- [ ] **Proje 3: Çok Thread'li Web Server**
-  - *Plan:* Sıfırdan HTTP sunucusu yazımı, Thread Pool implementasyonu.
+- [x] **[Proje 3: Çok Thread'li Web Server](./hello_server/README.md)**
+  - *Açıklama:* Sıfırdan HTTP sunucusu yazımı, Thread Pool implementasyonu.
   - *Kazanımlar:* TCP/IP, Thread yönetimi, `Arc` ve `Mutex`.
 
 - [ ] **Proje 4: Gerçek Zamanlı Chat Uygulaması**
@@ -61,4 +61,4 @@ cargo run -- "aranacak_metin" poem.txt
 4.  [Jon Gjengset (YouTube)](https://www.youtube.com/c/JonGjengset)
 
 ---
-*Bu proje [Gemini](https://deepmind.google/technologies/gemini/) ile pair programming yapılarak geliştirilmiştir.*
+
