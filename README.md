@@ -35,9 +35,9 @@ Bu depo, Rust programlama dilini sıfırdan ileri seviyeye kadar öğrenmek içi
 ### Seviye 3: İleri Seviye ve Performans (Advanced)
 **Odak:** Unsafe Rust, Macros, FFI, Gömülü Sistemler.
 
-- [ ] **Proje 5: Key-Value Veritabanı**
-  - *Plan:* Log-structured merge-tree tabanlı kalıcı veri saklama motoru.
-  - *Kazanımlar:* Disk I/O, Binary formatlar, Bellek yönetimi.
+- [x] **[Proje 5: Key-Value Veritabanı](./kv_store/README.md)**
+  - *Açıklama:* Log-structured dosya tabanlı veritabanı.
+  - *Kazanımlar:* Dosya I/O, Serileştirme (`serde`, `bincode`), Veri Yapıları., Bellek yönetimi.
 
 - [ ] **Proje 6: Minimal İşletim Sistemi Çekirdeği**
   - *Plan:* Bare-metal üzerinde çalışan, ekrana yazı yazan mini kernel.
