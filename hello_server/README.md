@@ -1,37 +1,61 @@
-# Multi-Threaded Web Server
+# Multi-Threaded Web Server 🌐
 
-Bu proje, Rust öğrenim yol haritasının üçüncü adımıdır. Rust'ın standart kütüphanesini (`std::net`, `std::thread`, `std::sync`) kullanarak sıfırdan yazılmış, çok iş parçacıklı (multi-threaded) bir web sunucusudur.
+Bu proje, Rust öğrenim yol haritasının üçüncü adımıdır. Herhangi bir framework kullanmadan, sadece Rust standart kütüphanesi (`std`) ile yazılmış, çok iş parçacıklı (multi-threaded) bir HTTP sunucusudur.
 
-## Özellikler
+## 🚀 Özellikler
 
-- **Thread Pool:** Sabit sayıda thread oluşturarak sistem kaynaklarını verimli kullanır.
-- **Concurrency:** Uzun süren işlemler (örn. `/sleep`) diğer istekleri bloklamaz.
-- **HTTP 1.1:** Temel HTTP protokolü desteği (GET istekleri).
-- **Graceful Shutdown:** `Drop` trait'i sayesinde sunucu kapanırken kaynakları temizler.
+- **Thread Pool:** Sabit sayıda (örn. 4) thread oluşturur. Gelen istekler bu havuzdaki boşta olan thread'ler tarafından işlenir.
+- **Concurrency:** Uzun süren işlemler (simüle edilmiş `/sleep` isteği) sunucuyu bloklamaz, diğer istekler cevaplanmaya devam eder.
+- **Graceful Shutdown:** Sunucu kapatıldığında (Ctrl+C), çalışan işlemlerin bitmesi beklenir.
 
-## Kurulum ve Çalıştırma
+## 🛠️ Kurulum ve Çalıştırma
 
-1.  Projeyi derleyin ve çalıştırın:
-    ```bash
-    cargo run
-    ```
-2.  Tarayıcınızda `http://127.0.0.1:7878` adresine gidin.
+```bash
+cd hello_server
+cargo run
+```
+Sunucu `127.0.0.1:7878` adresinde çalışmaya başlayacaktır.
 
-## Test Endpoints
+## 📖 Kullanım Senaryoları
 
-- `/`: Ana sayfa (`hello.html`).
-- `/sleep`: 5 saniye süren işlem (Concurrency testi için).
-- `/herhangi-bir-sey`: 404 sayfası (`404.html`).
+### 1. Normal İstek
+Tarayıcıda `http://127.0.0.1:7878` adresine gidin.
+**Sonuç:** `hello.html` sayfası yüklenir.
 
-## Teknik Detaylar
+### 2. Eşzamanlılık (Concurrency) Testi
+Bu test, sunucunun gerçekten multi-threaded çalıştığını kanıtlar.
+```bash
+# İlk istek 5 saniye uyur, ikinci istek hemen cevap vermelidir.
+curl http://127.0.0.1:7878/sleep & curl http://127.0.0.1:7878
+```
+**Beklenen Davranış:** İkinci `curl` komutu, ilkinin bitmesini beklemeden hemen yanıt döner.
 
-### Kullanılan Teknolojiler
-- **TcpListener:** Gelen TCP bağlantılarını dinlemek için.
-- **Arc & Mutex:** Threadler arasında güvenli veri paylaşımı (`mpsc::Receiver` paylaşımı) için.
-- **mpsc (Multi-producer, single-consumer):** Ana thread'den işçi thread'lere görev göndermek için kanal yapısı.
-- **Box<dyn FnOnce() + Send + 'static>:** Görevleri (closure) tiplemek ve saklamak için.
+## 🏗️ Mimari ve Kod Yapısı
 
-### Öğrenilen Kavramlar
-- **Interior Mutability:** `RefCell` yerine `Mutex` kullanarak thread-safe mutability.
-- **Message Passing:** Threadler arası iletişim.
-- **Trait Objects:** Dinamik dispatch ile farklı closure tiplerini saklama.
+Sunucu, "Master-Worker" modelini kullanır:
+
+```mermaid
+graph TD
+    A[Main Thread / TcpListener] -->|Bağlantı Kabul| B(ThreadPool)
+    B -->|Görev Gönder| C{mpsc Channel}
+    C -->|İş Al| D[Worker 1]
+    C -->|İş Al| E[Worker 2]
+    C -->|İş Al| F[Worker 3]
+    C -->|İş Al| G[Worker 4]
+```
+
+### Temel Bileşenler
+
+1.  **`ThreadPool`**:
+    - İşçileri (`Worker`) oluşturur ve yönetir.
+    - `execute` metodu ile gelen closure'ı (görevi) kanala gönderir.
+
+2.  **`Worker`**:
+    - Kendi thread'inde sonsuz döngüde çalışır.
+    - Kanaldan (`Receiver`) iş gelmesini bekler ve gelen işi çalıştırır.
+    - `Arc<Mutex<Receiver<Job>>>` yapısı sayesinde tüm işçiler aynı kanalı güvenli bir şekilde dinler.
+
+3.  **`handle_connection`**:
+    - TCP akışını okur.
+    - HTTP isteğini parse eder ("GET / HTTP/1.1").
+    - Uygun yanıtı (`200 OK` veya `404 NOT FOUND`) oluşturup geri yazar.

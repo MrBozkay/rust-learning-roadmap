@@ -1,61 +1,90 @@
-# To-Do List CLI
+# To-Do List CLI 📝
 
-Bu proje, Rust öğrenim yol haritasının başlangıç seviyesi (Beginner) projesidir. Temel Rust kavramlarını pekiştirmek amacıyla geliştirilmiş, komut satırı üzerinden çalışan bir görev yöneticisidir.
+Bu proje, Rust öğrenim yol haritasının başlangıç seviyesi (Beginner) projesidir. Temel Rust kavramlarını pekiştirmek amacıyla geliştirilmiş, komut satırı üzerinden çalışan, verileri JSON formatında saklayan bir görev yöneticisidir.
 
-## Özellikler
+## 🚀 Özellikler
 
 - **Görev Ekleme:** `add` komutu ile yeni görevler oluşturma.
 - **Listeleme:** `list` komutu ile mevcut görevleri ve durumlarını görüntüleme.
 - **Tamamlama:** `complete` komutu ile görevleri tamamlandı olarak işaretleme.
 - **Silme:** `delete` komutu ile görevleri silme.
-- **Kalıcılık:** Veriler JSON formatında (`tasks.json`) saklanır, uygulama kapansa bile kaybolmaz.
+- **Kalıcılık:** Veriler `tasks.json` dosyasında saklanır.
 
-## Kurulum ve Çalıştırma
+## 🛠️ Kurulum ve Çalıştırma
 
-Bu projeyi çalıştırmak için sisteminizde Rust ve Cargo yüklü olmalıdır.
+```bash
+# Proje dizinine girin
+cd todo_cli
 
-1.  Projeyi derleyin ve çalıştırın:
-    ```bash
-    cargo run -- help
-    ```
+# Yardım menüsünü görüntüleyin
+cargo run -- --help
+```
 
-## Kullanım Örnekleri
+## 📖 Kullanım Senaryoları
 
 ### 1. Yeni Görev Ekleme
 ```bash
 cargo run -- add "Rust öğren"
+cargo run -- add "Proje yap"
+```
+**Çıktı:**
+```text
+Task added: 1
+Task added: 2
 ```
 
 ### 2. Görevleri Listeleme
 ```bash
 cargo run -- list
 ```
-*Çıktı:* `1 [ ] - Rust öğren`
+**Çıktı:**
+```text
+1 [ ] - Rust öğren
+2 [ ] - Proje yap
+```
 
 ### 3. Görevi Tamamlama
 ```bash
 cargo run -- complete 1
 ```
-
-### 4. Görevi Silme
-```bash
-cargo run -- delete 1
+**Çıktı:**
+```text
+Task 1 completed.
 ```
 
-## Teknik Detaylar
+### 4. Son Durumu Görme
+```bash
+cargo run -- list
+```
+**Çıktı:**
+```text
+1 [x] - Rust öğren
+2 [ ] - Proje yap
+```
 
-### Kullanılan Teknolojiler
-- **Rust:** Ana programlama dili.
-- **Clap:** Komut satırı argümanlarını (CLI) işlemek için.
-- **Serde & Serde JSON:** Verileri JSON formatına serileştirmek ve deserileştirmek için.
+## 🏗️ Kod Yapısı
 
-### Veri Yapıları
-- **Task:** Her bir görevi temsil eden yapı (id, açıklama, durum).
-- **TodoList:** Görev listesini yöneten ve dosya işlemlerini (load/save) yapan yapı.
+Proje tek bir `main.rs` dosyasından oluşsa da, mantıksal olarak modüllere ayrılmıştır:
 
-### Öğrenilen Kavramlar
-- `struct` ve `enum` tanımlama.
-- `impl` blokları ile metot tanımlama.
-- `Result` tipi ile hata yönetimi.
-- Dosya okuma/yazma işlemleri (`std::fs`).
-- Sahiplik (Ownership) ve Borçlanma (Borrowing) kuralları.
+### Veri Yapıları (`structs`)
+- **`Task`**: Tek bir görevi temsil eder.
+  ```rust
+  struct Task {
+      id: usize,
+      description: String,
+      completed: bool,
+  }
+  ```
+- **`TodoList`**: Görev listesini yönetir ve dosya işlemlerinden sorumludur.
+  ```rust
+  struct TodoList {
+      tasks: Vec<Task>,
+  }
+  ```
+
+### CLI Yönetimi (`clap`)
+- **`Cli`**: Komut satırı argümanlarını parse eder.
+- **`Commands`**: `Add`, `List`, `Complete`, `Delete` gibi alt komutları (`enum`) tanımlar.
+
+### Veri Saklama (`serde`)
+- `serde` ve `serde_json` kütüphaneleri kullanılarak `TodoList` yapısı JSON formatına çevrilip `tasks.json` dosyasına yazılır.

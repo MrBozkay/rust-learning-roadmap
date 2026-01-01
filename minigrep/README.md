@@ -1,43 +1,75 @@
-# Minigrep (Grep Clone)
+# Minigrep (Grep Clone) 🔍
 
-Bu proje, Rust öğrenim yol haritasının ikinci adımıdır. Klasik `grep` komut satırı aracının basitleştirilmiş bir Rust versiyonudur.
+Bu proje, Rust öğrenim yol haritasının ikinci adımıdır. Klasik `grep` komut satırı aracının basitleştirilmiş bir Rust versiyonudur. Dosya okuma, string işleme ve hata yönetimi konularına odaklanır.
 
-## Özellikler
+## 🚀 Özellikler
 
-- **Metin Arama:** Bir dosya içinde belirli bir metni arar ve eşleşen satırları ekrana yazdırır.
-- **Dosya Okuma:** Büyük dosyaları bile satır satır işleyebilir (iteratorler sayesinde).
-- **Esnek Arama:** `IGNORE_CASE` çevre değişkeni ile büyük/küçük harf duyarsız arama yapılabilir.
-- **Güvenli:** Rust'ın sahiplik (ownership) ve tip güvenliği özelliklerini kullanır.
+- **Metin Arama:** Dosya içinde aranan kelimeyi bulur ve ilgili satırları basar.
+- **Büyük/Küçük Harf Duyarlılığı:** `IGNORE_CASE` çevre değişkeni ile kontrol edilebilir.
+- **Modüler Yapı:** `main.rs` ve `lib.rs` ayrımı ile temiz kod mimarisi.
+- **Test Edilebilir:** İş mantığı unit testlerle doğrulanmıştır.
 
-## Kurulum ve Çalıştırma
+## 🛠️ Kurulum ve Çalıştırma
 
-1.  Projeyi derleyin ve çalıştırın:
-    ```bash
-    cargo run -- "aranacak_metin" dosya_yolu.txt
-    ```
-
-## Kullanım Örnekleri
-
-### 1. Standart Arama
 ```bash
-cargo run -- "nobody" poem.txt
+cd minigrep
 ```
 
-### 2. Büyük/Küçük Harf Duyarsız Arama
-```bash
-IGNORE_CASE=1 cargo run -- "NOBODY" poem.txt
+## 📖 Kullanım Senaryoları
+
+Örnek dosya (`poem.txt`) içeriği:
+```text
+I'm nobody! Who are you?
+Are you nobody, too?
+How dreary to be somebody!
 ```
 
-## Teknik Detaylar
+### 1. Standart Arama (Case Sensitive)
+"to" kelimesini arayalım (küçük harf):
+```bash
+cargo run -- "to" poem.txt
+```
+**Çıktı:**
+```text
+Are you nobody, too?
+How dreary to be somebody!
+```
 
-### Kullanılan Teknolojiler
-- **std::env:** Komut satırı argümanlarını okumak için.
-- **std::fs:** Dosya okuma işlemleri için.
-- **Iteratorler:** Bellek verimliliği ve fonksiyonel programlama yaklaşımı için.
-- **Unit Tests:** Arama mantığını doğrulamak için TDD (Test Driven Development) yaklaşımı kullanıldı.
+### 2. Büyük/Küçük Harf Duyarsız Arama (Case Insensitive)
+"TO" kelimesini arayalım, ancak `IGNORE_CASE` aktif olsun:
+```bash
+IGNORE_CASE=1 cargo run -- "TO" poem.txt
+```
+**Çıktı:**
+```text
+Are you nobody, too?
+How dreary to be somebody!
+To tell your name the livelong day
+To an admiring bog!
+```
 
-### Öğrenilen Kavramlar
-- **Lifetime Annotations:** Referansların geçerlilik sürelerini yönetme (`'a`).
-- **Error Handling:** `Result` ve `Box<dyn Error>` ile dinamik hata yönetimi.
-- **Closures:** `Config::build` içinde iterator adaptörleri kullanımı.
-- **Environment Variables:** Çalışma zamanı konfigürasyonu.
+## 🏗️ Kod Yapısı
+
+Proje, "Binary" ve "Library" olarak ikiye ayrılmıştır (Separation of Concerns):
+
+### `src/main.rs` (Binary Crate)
+- Programın giriş noktasıdır.
+- Argümanları alır ve `lib.rs` içindeki `run` fonksiyonunu çağırır.
+- Hata oluşursa kullanıcıya anlamlı bir mesaj gösterip çıkar.
+
+### `src/lib.rs` (Library Crate)
+- **`Config` Struct:** Argümanları (sorgu, dosya yolu, ignore_case) ayrıştırır ve tutar.
+- **`run` Fonksiyonu:** Dosyayı okur ve arama işlemini yönetir.
+- **`search` Fonksiyonu:**
+  ```rust
+  pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+      contents
+          .lines()
+          .filter(|line| line.contains(query))
+          .collect()
+  }
+  ```
+  *Not: Iteratorler (`filter`, `collect`) kullanılarak bellek verimliliği sağlanmıştır.*
+
+### Testler
+- `lib.rs` içinde TDD (Test Driven Development) yaklaşımıyla yazılmış unit testler bulunur.
